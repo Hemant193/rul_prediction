@@ -40,7 +40,14 @@ class RULModel(nn.Module):
 def preprocess_test_data(test_path, rul_path, scaler):
     test_data_rul = pd.read_csv(rul_path, sep=" ", header=None)
     test_data = pd.read_csv(test_path, sep=" ", header=None)
-    test_data.drop(columns=[26, 27], inplace=True)
+
+    columns_to_drop = [col for col in [26, 27] if col in test_data.columns]
+    if columns_to_drop:
+        test_data.drop(columns=columns_to_drop, inplace=True)
+
+    if len(test_data.columns) != 26:
+        raise ValueError(f"Expected 26 columns in test data, got {len(test_data.columns)}")
+    
     test_data.columns = COLUMNS
     test_data.drop(columns=['Nf_dmd', 'PCNfR_dmd', 'P2', 'T2', 'TRA', 'farB', 'epr'], inplace=True)
     
